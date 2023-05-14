@@ -13,5 +13,3 @@ This version is mostly functional, however there are some known errors and missi
 -	Missing feature: user adjustable forecast length. 
 -	Missing feature: more weather metrics, such as sunrise and sunset times
 -	Format: present things more properly, e.g., have borders, and better prompts
-
-![image](https://github.com/Programming-The-Next-Step-2023/dashingWeather/assets/132884849/7bb067c3-7523-40fb-9c17-e690fd56df68)
