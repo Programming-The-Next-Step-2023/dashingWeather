@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dashingWeather"
+version = "2.0"
+authors = [
+  { name="Mohammad Hamdan", email="mohammad.hamdan@student.uva.nl" },
+]
+description = "A Python-based (Dash) weather app that uses an API call to `openweathermap` in order to fetch different weather information and present them in a user-friendly way."
+readme = "README.md"
+requires-python = ">=3.9.3"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/Programming-The-Next-Step-2023/dashingWeather"
+"Bug Tracker" = "https://github.com/Programming-The-Next-Step-2023/dashingWeather/issues"
