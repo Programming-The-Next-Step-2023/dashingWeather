@@ -1,4 +1,9 @@
 # dashingWeather
+
+I will be creating a weather app for the course "Programming: The Next Step".
+
+This app will be built using `Dash` and will fetch information using the free API of `openweathermap.org`. It will include various funtionalities such as displaying current weather conditions (incl. temperature, humidity, wind speed), as well as a forecast for temperature and rain over the next few days (max up to 5), number of days can be user customized.
+
 A weather app created by using `Dash`
 
 Version 1.0:
@@ -22,5 +27,3 @@ In the next version:
 - Button still needs to be added
 - Weather tomorrow
 - Might need to remove the flag feature, as there seems to be an error originating with the API provider
-
-
