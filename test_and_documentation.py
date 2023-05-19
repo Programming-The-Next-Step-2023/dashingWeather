@@ -30,7 +30,6 @@ def get_coords(city):
 
     return(coords)
 
-#city = "Amsterdam"
 for city in cities:
     city = city.replace(" ", "+", 1)
     class MyTestCase(unittest.TestCase):
