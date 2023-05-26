@@ -31,3 +31,4 @@ In the next version:
 Version 3.0:
 
 This is the final version of the app, but will probably continue to recieve minor changes until the end of the course. It includes a "tomorrow's weather" section, a functional "Go" button, new icons and other layout changed - as well as a dynamic icon: a flag (I have opted to use a different API call from a more reliable source, so hopefully this feature will stay).
+Due to continous small changes, 3.0 might not be the final 3.x version on this branch, so please refer to the latest version available.
