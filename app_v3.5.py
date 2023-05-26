@@ -1,4 +1,4 @@
-# This is the fourth version of the app, with a working flag API retrieval, new icons and some layout changes.
+# This is version 3.5 of the app, with a working flag API retrieval, new icons and some layout changes.
 # Made some code more legible (incl. changing some variable names).
 
 # importing packages and functions
@@ -146,6 +146,7 @@ def current_weather_to_df(current_weather, units_of_measurement):
                            "Sunrise",
                            "Sunset",
                            "Humidity",
+                           "Pressure",
                            "Wind speed",
                            "Cloudy"])
     Stats = np.array([current_weather["weather"][0]["main"],
@@ -157,6 +158,7 @@ def current_weather_to_df(current_weather, units_of_measurement):
                       str(datetime.utcfromtimestamp(current_weather["sys"]["sunrise"]).replace(tzinfo=timezone.utc).astimezone(tz=current_time_zone))[11:16],
                       str(datetime.utcfromtimestamp(current_weather["sys"]["sunset"]).replace(tzinfo=timezone.utc).astimezone(tz=current_time_zone))[11:16],
                       str(current_weather["main"]["humidity"]) + "%",
+                      str(current_weather["main"]["pressure"]) + " Pa",
                       str(int(np.round(current_weather["wind"]["speed"]))) + " " + units_of_measurement['speed_measurement'],
                       str(int(np.round(current_weather["clouds"]["all"]))) +  "%"
                       ])
@@ -232,6 +234,7 @@ def plot_weather_temperature(weather_forecast, units_of_measurement):
                   title=str("Forecast for " + city_for_title + " temperature over the next " + str(for_plot["Dates"][for_plot["Dates"].size - 1] - for_plot["Dates"][0])[0:6]))
     fig_temp.update_traces(line_color = "red")
     fig_temp.update_layout(
+        title_x=0.5, # centering title
         plot_bgcolor='white', # removing default background
         yaxis_title= str("Temperatures (" + units_of_measurement['temp_measurement'] +")"), # adding measurement to y axis title
         title_font_family=font,
@@ -308,6 +311,7 @@ def plot_weather_rain(weather_forecast):
                            rain["Dates"][rain["Dates"].size - 1] - rain["Dates"][0])[0:6]))
     fig_rain.update_traces(line_color="#0047AB")
     fig_rain.update_layout(
+        title_x=0.5,
         plot_bgcolor='white',
         yaxis_title=str("Expected Rain (mm)"),
         title_font_family=font, # adding measurement to y axis title
@@ -385,15 +389,15 @@ def tomorrows_forecast(weather_forecast, units_of_measurement):
                            'Max Temp',
                            'Min Temp',
                            'Humidity'])
-    Stats = np.array([str(int(np.round(np.mean([tomorrows_forecast[i]['temp'] for i in range(8)])))) +
+    Stats = np.array([str(int(np.round(np.mean([tomorrows_forecast[i]['temp'] for i in range(8)])))) + " " +
                       units_of_measurement['temp_measurement'],
-                      str(int(np.round(np.mean([tomorrows_forecast[i]['feels_like'] for i in range(8)])))) +
-                      units_of_measurement['temp_measurement'],
-                      str(int(
-                          np.round(np.ndarray.max(np.array([tomorrows_forecast[i]['temp_max'] for i in range(8)]))))) +
+                      str(int(np.round(np.mean([tomorrows_forecast[i]['feels_like'] for i in range(8)])))) + " " +
                       units_of_measurement['temp_measurement'],
                       str(int(
-                          np.round(np.ndarray.min(np.array([tomorrows_forecast[i]['temp_min'] for i in range(8)]))))) +
+                          np.round(np.ndarray.max(np.array([tomorrows_forecast[i]['temp_max'] for i in range(8)]))))) + " " +
+                      units_of_measurement['temp_measurement'],
+                      str(int(
+                          np.round(np.ndarray.min(np.array([tomorrows_forecast[i]['temp_min'] for i in range(8)]))))) + " " +
                       units_of_measurement['temp_measurement'],
                       str(int(np.round(np.mean([tomorrows_forecast[i]['humidity'] for i in range(8)])))) + "%"
                       ])
@@ -433,22 +437,23 @@ app.layout = html.Div([
         html.Div(children=[
             # input city prompt space
             html.Div([html.Br(),
+                      # pin icon
                       html.Img(src = "https://cdn-icons-png.flaticon.com/512/929/929426.png",
-                               style={'width': '3vh', 'height': '3vh'}),
+                               style={'width': '4vh', 'height': '4vh'}),
                       html.P(children="Which city do you live in?", style = {'font-family':font, "font-size": "20px"}),
-                      dcc.Input(id="city", type="text", placeholder="Enter city name", style = {'font-family':font, "font-size": "20px"}),
-                      # breaks
-                      html.Br(), html.Br(),
-                      html.Button('Go', id = "button", style = {'font-family':font, "font-size": "16px"}),
-                      html.Br(), html.Br()],
-                     style = {'textAlign': 'center', 'width': '49.5vh','margin-top' : "0vh",
+                      html.Div([dcc.Input(id="city", type="text", placeholder="Enter city name", style = {'font-family':font, "font-size": "20px"}),
+                                html.Button('Go', id = "button", style = {'font-family':font, "font-size": "16px",
+                                                                          'margin-left' : "1vh"})]),
+                      html.Br()],
+                     style = {'textAlign': 'center', 'margin-top' : "0vh",
                               "border":"2px black solid",}),
 
 
             # input unit prompt space
             html.Div([html.Br(),
-                      html.Img(src="https://cdn-icons-png.flaticon.com/512/1113/1113742.png",
-                               style={'width': '3vh', 'height': '3vh'}),
+                      # ruler icon
+                      html.Img(src="https://cdn-icons-png.flaticon.com/512/3789/3789950.png",
+                               style={'width': '4vh', 'height': '4vh'}),
                       html.P(children="Choose a system of measurement",
                              style = {'font-family':font, "font-size": "18px"}),
                       dcc.RadioItems(id = "unit",
@@ -466,49 +471,55 @@ app.layout = html.Div([
 
             # current weather
             html.Div(children = [
-                html.Br(),
-                html.Img(id="flag", src = img, style={'width': '4vh', 'height': '4vh'}),
-                html.Br(),
+                # flag icon
+                html.Img(id="flag", src = img, style={'width': '4vh', 'height': '4vh',
+                                                      "margin-top" : "5px"}),
+
                 html.P(id = "showing_weather_for", children = now_showing,
-                       style = {'textAlign': 'center', "font-family" : font, "font-size" : "16px"}),
+                       style = {'textAlign': 'center', "font-family" : font, "font-size" : "18px",
+                                "margin-top" : "1px"}),
 
                 # today's weather data table
                 dash_table.DataTable(id="current_weather_df",
                                      data=current_weather_df,
-                                     page_size=10,
+                                     page_size=15,
                                      fill_width=True,
                                      style_cell={'textAlign': 'center', 'font-family':font},
                                      style_data={'width': '125px','height': '20px'})],
                 style = {'textAlign': 'center', "border":"2px black solid", 'margin-top': '1vh'})],
             style={'display': 'inline-block', 'horizontal-align' : 'center', 'vertical-align': 'top',
-                   'margin-left': '1vh', 'margin-top': '1vh', "width" : "50vh"}), # div style
+                   'margin-left': '1vh', 'margin-top': '1vh', "width" : "45vh"}), # div style
 
         # second column
         html.Div(id = "graph_column", children=[
             html.Br(),
+            # thermometer icon
             html.Div([html.Img(src = "https://cdn-icons-png.flaticon.com/512/1779/1779871.png",
                                            style={'width': '5vh', 'height': '5vh'}),
                       html.Br(),
             # temperature plot
                       dcc.Graph(id="temp_graph",
                                 figure=fig_temp,
-                                style={'width': '75vh', 'height': '42vh', 'display': 'inline-block'})]),
-            html.Br(),
+                                style={'width': '75vh', 'height': '40vh', 'display': 'inline-block'})]),
 
+            # rain icon
             html.Img(src = "https://cdn-icons-png.flaticon.com/512/1779/1779907.png",
                                            style={'width': '5vh', 'height': '5vh'}),
             # rain plot
             html.Div([dcc.Graph(id="rain_graph",
                                 figure=fig_rain,
-                                style={'width': '75vh', 'height': '42vh', 'display': 'inline-block'})]),
-            html.Br()],
+                                style={'width': '75vh', 'height': '40vh', 'display': 'inline-block'})]),
+
+        ],
                  style={'display': 'inline-block', 'vertical-align': 'top',
+                        'width': '78vh',
                         'margin-left': '1vh',
                         'margin-top': '1vh',"border":"2px black solid", "text-align" : "center",
-                        "height" : "101vh"}),
+                        "height" : "95.35vh"}),
 
         # third column
         html.Div(children=[html.Div(children = [
+            # map input
             dcc.Dropdown(id = "world_map", options = [{"label" : 'Temperature', "value" : "temp_new"},
                                                       {"label" : 'Wind', "value" : "wind_new"},
                                                       {"label" : "Clouds", "value" : "clouds_new"},
@@ -519,73 +530,77 @@ app.layout = html.Div([
 
             # world + weather map
             # here we have to overlap two maps: a world map and a world weather map, where the world weather map
-            # is on top. so we tackle these two maps one quadrant at a time, starting from the top two
+            # is on top. so we tackle these two maps one quadrant at a time, starting from the top half
             # (left, then right).
 
             # top
             html.Img(src="https://tile.openstreetmap.org/1/0/0.png",
-                     style={'position': 'absolute','top': '5vh', 'left': '0vh','width': '25vh', 'height': '25vh'}),
+                     style={'position': 'absolute','top': '5vh', 'left': '0vh','width': '23vh', 'height': '23vh'}),
             html.Img(id = "world_map_q1_weather", src=world_map_metrics[0],
-                     style={'position': 'absolute','top': '5vh', 'left': '0vh','width': '25vh', 'height': '25vh'}),
+                     style={'position': 'absolute','top': '5vh', 'left': '0vh','width': '23vh', 'height': '23vh'}),
             html.Img(src="https://tile.openstreetmap.org/1/1/0.png",
-                     style={'position': 'absolute','top': '5vh', 'left': '25vh','width': '25vh', 'height': '25vh'}),
+                     style={'position': 'absolute','top': '5vh', 'left': '23vh','width': '23vh', 'height': '23vh'}),
             html.Img(id = "world_map_q2_weather",src=world_map_metrics[1],
-                     style={'position': 'absolute', 'top': '5vh', 'left': '25vh','width': '25vh', 'height': '25vh'}),
+                     style={'position': 'absolute', 'top': '5vh', 'left': '23vh','width': '23vh', 'height': '23vh'}),
 
             # bottom
             html.Img(src="https://tile.openstreetmap.org/1/0/1.png",
-                     style={'position': 'absolute', 'top': "30vh", 'left': '0vh', 'width': '25vh','height': '25vh'}),
+                     style={'position': 'absolute', 'top': "28vh", 'left': '0vh', 'width': '23vh','height': '23vh'}),
             html.Img(id = "world_map_q3_weather",src=world_map_metrics[2],
-                     style={'position': 'absolute', 'top': '30vh', 'left': '0vh', 'width': '25vh','height': '25vh'}),
+                     style={'position': 'absolute', 'top': '28vh', 'left': '0vh', 'width': '23vh','height': '23vh'}),
             html.Img(src="https://tile.openstreetmap.org/1/1/1.png",
-                     style={'position': 'absolute', 'top': '30vh', 'left': '25vh', 'width': '25vh','height': '25vh'}),
+                     style={'position': 'absolute', 'top': '28vh', 'left': '23vh', 'width': '23vh','height': '23vh'}),
             html.Img(id = "world_map_q4_weather",src=world_map_metrics[3],
-                     style={'position': 'absolute', 'top': '30vh', 'left': '25vh', 'width': '25vh','height': '25vh'}),
+                     style={'position': 'absolute', 'top': '28vh', 'left': '23vh', 'width': '23vh','height': '23vh'}),
         ]),
             # tomorrow's weather
-            html.Div([html.Br(),
-                      html.Img(src = "https://cdn-icons-png.flaticon.com/512/6755/6755650.png",
-                               style={'width': '3vh', 'height': '3vh'}),
+
+            html.Div([
+                # tomorrow icon
+                html.Img(src = "https://cdn-icons-png.flaticon.com/512/6755/6755650.png",
+                               style={'width': '3vh', 'height': '3vh', "margin-top" : "5px"}),
                 html.P(id = "weather_tomorrow_title", children = "Tomorrow's weather",
-                       style = {'textAlign': 'center', "font-family" : font, "font-size" : "16px"}),
+                       style = {'textAlign': 'center', "font-family" : font, "font-size" : "16px",
+                                "margin-top" : "2px"}),
                 dash_table.DataTable(id="tomorrows_forecast",
                                      data=weather_tomorrow,
                                      page_size=10,
                                      fill_width=True,
                                      style_cell={'textAlign': 'center', 'font-family': font},
-                                     style_data={'width': '140px', 'height': '20px'}),
+                                     style_data={'width': '140px', 'height': '20px', "margin-top" : "2px"}),
                     ],
-                     style = {'position': 'relative', "margin-top" : "51vh",
-                              "border":"2px black solid", "width" : "50vh"}),
+                     style = {'position': 'relative', "margin-top" : "48vh",
+                              "border":"2px black solid", "width" : "46vh"}),
 
-            # my name + credentials + app icons at the bottom
+            # my name + app icons/links at the bottom
             html.Div(children = [
                 html.P(["dashingWeather was created by Mohammad Hamdan"#, html.Br(), "@the_mhamdan on Twitter"
                         ]),
+                # twitter icon + link
                 html.A(href="https://www.twitter.com/the_mhamdan",
                        children=[
                            html.Img(
                                src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Logo_of_Twitter.svg/512px-Logo_of_Twitter.svg.png?20220821125553",
-                               style={'width': '4vh', 'height': '3vh', 'margin-right': '1vh'})]),
-
+                               style={'width': '4vh', 'height': '3vh', 'margin-right': '0.5vh'})]),
+                # github icon + link
                 html.A(href="https://github.com/themohammadhamdan",
                        children=[
                            html.Img(
                                src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
-                               style={'width': '4vh', 'height': '4vh', 'margin-right': '1vh'})]),
-
+                               style={'width': '4vh', 'height': '4vh', 'margin-right': '0.5vh'})]),
+                # linkedin icon + link
                 html.A(href="https://linkedin.com/in/themohammadhamdan",
                        children=[
                            html.Img(
                                src="https://cdn-icons-png.flaticon.com/512/174/174857.png",
-                               style={'width': '4vh', 'height': '4vh', 'margin-right': '1vh'})]),
+                               style={'width': '4vh', 'height': '4vh', 'margin-right': '0.5vh'})]),
 
             ],
                 style = {"font-family" : font, "font-size" : "14px", "color" : "#8B8B8B",
-                         'position': 'relative', 'top' : "0vh", "text-align" : "left"})],
-            style={'display': 'inline-block', 'textAlign': 'center','position': 'relative', 'width': '50vh',
-                   'vertical-align': 'top', 'margin-left': '1vh', 'margin-top': '1vh', 'height' : '55vh',
-                   "border":"2px black solid", 'backgroundColor':'black'
+                         'position': 'relative', 'top' : "0vh", "text-align" : "left", "left" : "1vh"})],
+            style={'display': 'inline-block', 'textAlign': 'center','position': 'relative', 'width': '46vh',
+                   'vertical-align': 'top', 'margin-left': '1vh', 'margin-top': '1vh', 'height' : '51vh',
+                   "border":"2px black solid"
                    })],
     className='row')])
 
@@ -618,7 +633,7 @@ app.layout = html.Div([
           component_property='value'),
      Input('button', "n_clicks")],
     [State("city", "value")],
-    prevent_initial_call=True
+    prevent_initial_call="initial_duplicate"
 )
 
 def update_city(selection, n_clicks, n_clicks_update):
@@ -671,7 +686,7 @@ def update_unit(selection):
     weather_forecast = get_weather_forecast(coords, unit)
     fig_temp = plot_weather_temperature(weather_forecast, units_of_measurement)
     weather_tomorrow = tomorrows_forecast(weather_forecast, units_of_measurement)
-    return(current_weather_df, fig, weather_tomorrow)
+    return(current_weather_df, fig_temp, weather_tomorrow)
 
 # updating world map based on user selection from dropdown
 @app.callback(
