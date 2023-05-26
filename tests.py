@@ -3,6 +3,8 @@ import requests, json
 import numpy as np
 import pandas as pd
 
+# this is the list of cities used for the test. input is deliberately written in a wonky way to show that the
+# function can still properly retrieve the name of the desired city
 cities = ["amstErdam", "cAiro", "new york", "lOs angeles", "mOntreal", "agios dimitrios",
           "the haGue", "dar El sAlam", "hibiscus coast", "kingston upon hull"]
 
