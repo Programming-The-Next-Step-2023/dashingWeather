@@ -1,4 +1,11 @@
-dash
+
 numpy
 pandas
-plotly
+Image
+plotly.express
+BytesIO
+requests
+json
+dash
+dash.dependencies
+datetime
