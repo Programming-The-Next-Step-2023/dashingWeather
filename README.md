@@ -7,4 +7,4 @@ This app was built using `Dash` and fetches real time weather information using 
 In this repository, you can find:
 - `dashingWeather.html`: a user manual
 - beta versions of the app in the`beta_versions` folder
-- in the `dashingWeather` folder, you can find all necessary files for the app itself, including a `requirements.txt` document and `setup.py. in the module folder you can find the app code itself (`app.py`) and in the test folder you can find all files necessary for the tests I've conducted.
+- in the `dashingWeather` folder, you can find all necessary files for the app itself, including a `requirements.txt` document and `setup.py`. in the module folder you can find the app code itself (`app.py`) and in the test folder you can find all files necessary for the tests I've conducted.
